@@ -156,10 +156,7 @@ public class ObservationsDecoder extends ResourceDecoder {
                 for (LinkType xb_Link : xb_links) {
                     if (isOfferingLink(xb_Link)) {
                         String href = xb_Link.getHref();
-//                        int lastSlashIndex = href.lastIndexOf("/");
-//                        String offeringId = href.substring(lastSlashIndex+1);
-//                        offeringIds.add(offeringId);
-                        offeringIds.add(href);
+						offeringIds.add(href);
                     }
                 }
                 
