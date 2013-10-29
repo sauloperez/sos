@@ -68,6 +68,21 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>do-core</artifactId>
         </dependency>
+        <dependency>
+	  		<groupId>com.rabbitmq</groupId>
+	  		<artifactId>amqp-client</artifactId>
+	  		<version>3.1.4</version>
+	  	</dependency>
+        <dependency>
+        	<groupId>com.google.code.gson</groupId>
+        	<artifactId>gson</artifactId>
+        	<version>2.2.4</version>
+        </dependency>
+        <dependency>
+        	<groupId>commons-lang</groupId>
+        	<artifactId>commons-lang</artifactId>
+        	<version>2.6</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -81,6 +96,11 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+            	<groupId>org.redch</groupId>
+            	<artifactId>qservice</artifactId>
+            	<version>0.0.1</version>
             </plugin>
         </plugins>
     </build>
