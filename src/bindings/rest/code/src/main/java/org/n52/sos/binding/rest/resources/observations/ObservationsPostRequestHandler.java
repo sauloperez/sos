@@ -66,8 +66,6 @@ public class ObservationsPostRequestHandler extends RequestHandler {
             // 2 handle core response
             XmlObject xb_InsertObservationResponse = executeSosRequest(ioReq);
             
-            publish(ioReq);
-            
             if (xb_InsertObservationResponse instanceof InsertObservationResponseDocument) {
                 // 3 return response
                 // no interesting content, just check the class to be sure that the insertion was successful
@@ -80,69 +78,5 @@ public class ObservationsPostRequestHandler extends RequestHandler {
         }
         throw logRequestTypeNotSupportedByThisHandlerAndCreateException(req,this.getClass().getName());
     }
-
-	private void publish(InsertObservationRequest ioReq) {
-		OmObservation observation = ioReq.getObservations().get(0);
-		
-		Sample sample = new Sample();
-		sample.setId(observation.getIdentifier().getValue());
-		sample.setValue(observation.getValue().getValue().getValue());
-		sample.setSensorId(observation.getObservationConstellation().getProcedure().getIdentifier());
-		sample.setResultTime(observation.getResultTime().getValue().toString());
-		
-		// Send a FeatureByIdRequest to get the Feature of Interest position (gml:pos xml node)
-		String foiId = observation.getObservationConstellation().getFeatureOfInterest().getIdentifier().getValue();
-		
-		List<String> featureIDs = new ArrayList<String>(1);
-        featureIDs.add(foiId);
-        
-		GetFeatureOfInterestRequest foiReq = new GetFeatureOfInterestRequest();
-		foiReq.setFeatureIdentifiers(featureIDs);
-		foiReq.setService("SOS");
-		foiReq.setVersion("2.0.0");
-		
-		// Retrieve the Feature of Interest geometry and store its coordinate
-		try {
-			FeatureByIdRequest featureByIdReq = new FeatureByIdRequest(foiReq, null);
-			FeaturesRequestHandler handler = new FeaturesRequestHandler();
-			FeatureByIdResponse resp = (FeatureByIdResponse) handler.handleRequest((RestRequest) featureByIdReq);
-			
-			String coord = getGmlPoint(resp.getAbstractFeature().xmlText());
-			sample.setCoord(coordToArray(coord));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// Json encoding and delivery
-		Gson gson = new Gson();
-		String jsonMsg = gson.toJson(sample);
-		
-		publishToQueue(jsonMsg, "samples");
-	}
-
-	private float[] coordToArray(String coord) {
-		String[] s = coord.split(" ");
-		float[] array = { Float.parseFloat(s[0]), Float.parseFloat(s[1]) };
-		return array;
-	}
-
-	private String getGmlPoint(String xmlText) {
-		String gmlPosPattern = "<gml:pos.*>(.+?)</gml:pos>";
-		Pattern pattern = Pattern.compile(gmlPosPattern);
-		Matcher matcher = pattern.matcher(xmlText);
-		matcher.find();
-		return matcher.group(1);
-	}
-
-	private void publishToQueue(String msg, String exchangeName) {
-		try {
-			AMQPService amqpService = new AMQPServiceImpl(exchangeName);
-			amqpService.publish(msg);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 }

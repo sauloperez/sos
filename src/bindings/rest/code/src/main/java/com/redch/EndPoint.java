@@ -16,11 +16,11 @@ public abstract class EndPoint {
     protected Connection connection;
     protected String exchangeName;
 	
-    public EndPoint(String exchangeName) throws IOException {
+    public EndPoint(String host, String exchangeName) throws IOException {
 		this.exchangeName = exchangeName;
 		
 		ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost(host);
         Connection connection = factory.newConnection();
         this.channel = connection.createChannel();
 		

@@ -8,8 +8,8 @@ import java.io.IOException;
  */
 public class Producer extends EndPoint {
 	
-	public Producer(String exchangeName) throws IOException{
-		super(exchangeName);
+	public Producer(String host, String exchangeName) throws IOException{
+		super(host, exchangeName);
 	}
 
 	public void sendMessage(String message) throws IOException {

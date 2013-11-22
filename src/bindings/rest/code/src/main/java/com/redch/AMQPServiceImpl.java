@@ -6,8 +6,8 @@ public class AMQPServiceImpl implements AMQPService {
 	
 	private Producer producer;
 	
-	public AMQPServiceImpl(String exchangeName) throws IOException {
-		this.producer = new Producer(exchangeName);
+	public AMQPServiceImpl(String host, String exchangeName) throws IOException {
+		this.producer = new Producer(host, exchangeName);
 	}
 
 	@Override

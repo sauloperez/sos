@@ -44,7 +44,7 @@ public class ObservationsRequestHandler extends RequestHandler {
             return new ObservationsGetRequestHandler().handleRequest(request);
 
         } else if (request instanceof ObservationsPostRequest){
-            return new ObservationsPostRequestHandler().handleRequest((ObservationsPostRequest)request);
+            return new RedchObservationsPostRequestHandler().handleRequest((ObservationsPostRequest)request);
             
         } else if (request instanceof ObservationsDeleteRequest) {
             return new ObservationsDeleteRequestHandler().handleRequest((ObservationsDeleteRequest)request);
