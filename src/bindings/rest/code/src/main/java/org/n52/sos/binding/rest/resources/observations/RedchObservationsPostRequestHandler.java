@@ -46,6 +46,7 @@ import com.google.gson.Gson;
 import com.redch.AMQPService;
 import com.redch.AMQPServiceImpl;
 import com.redch.Sample;
+import com.redch.exception.AMQPServiceException;
 
 /**
  * @author <a href="mailto:e.h.juerrens@52north.org">Eike Hinderk J&uuml;rrens</a>
@@ -152,6 +153,8 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 		} catch(IOException e) {
 			LOGGER.debug("AMQP properties retrieval failed");
 			throw e;
+		} catch (AMQPServiceException e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -38,4 +38,7 @@
             </modules>
         </profile>
     </profiles>
+    <modules>
+    	<module>amqp-service</module>
+    </modules>
 </project>
