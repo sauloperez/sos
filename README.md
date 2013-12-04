@@ -1,5 +1,7 @@
+# Redch SOS
+
 This is an sligthly modifed version of the [52°North SOS 4.0.](0https://wiki.52north.org/bin/view/SensorWeb/SensorObservationServiceIVDocumentation) which implements the 
-  OGC Sensor Observation Service (SOS) standard version 2.0.0. It aims to adapt 52ºNorth SOS implementation to fullfill the needs of the Redch project.
+  [OGC Sensor Observation Service (SOS)](http://www.opengeospatial.org/standards/sos) standard version 2.0.0. It aims to adapt 52ºNorth SOS implementation to fullfill the needs of the Redch project.
 
 ## AMQP Service extension
 
