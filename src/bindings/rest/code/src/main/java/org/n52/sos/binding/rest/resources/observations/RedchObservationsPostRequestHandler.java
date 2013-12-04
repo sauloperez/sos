@@ -71,6 +71,7 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
     	
     	try {
     		// Read all properties for further use
+    		// Note that the properties file must be stored within user's home directory
     		String dir = System.getProperty(USER_HOME);
     		File propsFile = new File(dir, PROPERTIES_FILE);
 			properties = RedchObservationsHelpers.propertiesToMap(propsFile);
