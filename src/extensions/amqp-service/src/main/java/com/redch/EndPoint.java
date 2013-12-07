@@ -12,36 +12,79 @@ import com.redch.exception.AMQPServiceException;
  *
  */
 public abstract class EndPoint {
-	
+
+    protected static String EXCHANGE_TYPE = "fanout";
+
+    protected String host;
+    protected String exchangeName;
     protected Channel channel;
     protected Connection connection;
-    protected String exchangeName;
-	
+    protected ConnectionFactory connectionFactory;
+
     public EndPoint(String host, String exchangeName) throws IOException, AMQPServiceException {
-    	if (host.equals("")) {
-    		throw new AMQPServiceException("AMQP host must be specified");
-    	}
-    	if (exchangeName.equals("")) {
-    		throw new AMQPServiceException("AMQP exchangeName must be specified");
-    	}
-    	
-		this.exchangeName = exchangeName;
-		
-		ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(host);
-        Connection connection = factory.newConnection();
-        this.channel = connection.createChannel();
-		
-        // Declare a named exchange of type fanout
-		channel.exchangeDeclare(exchangeName, "fanout");
-    }	
-	
-    public void setChannel(Channel channel) {
-    	this.channel = channel;
+        if (host.equals("")) {
+            throw new AMQPServiceException("AMQP host must be specified");
+        }
+        if (exchangeName.equals("")) {
+            throw new AMQPServiceException("AMQP exchangeName must be specified");
+        }
+
+        this.host = host;
+        this.exchangeName = exchangeName;
+        this.connectionFactory = new ConnectionFactory();
     }
-    
+
+    public void connect() throws IOException {
+        connectionFactory.setHost(host);
+        this.connection = connectionFactory.newConnection();
+        setChannel(connection.createChannel());
+
+        // Declare a named exchange of type fanout
+        channel.exchangeDeclare(exchangeName, EXCHANGE_TYPE);
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+    public void setConnectionFactory(ConnectionFactory cf) {
+        this.connectionFactory = cf;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getExchangeName() {
+        return exchangeName;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
+    }
+
+    public ConnectionFactory getConnectionFactory() {
+        return connectionFactory;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
     /**
-     * Close channel and connection. Not necessary as it happens implicitly any way. 
+     * Close channel and connection. Not necessary as it happens implicitly any way.
      * @throws IOException
      */
      public void close() throws IOException{
