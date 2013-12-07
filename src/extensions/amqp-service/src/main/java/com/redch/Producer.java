@@ -15,9 +15,9 @@ public class Producer extends EndPoint {
 	}
 
 	public void sendMessage(String message) throws IOException {
-    if (connection == null) {
-      connect();
-    }
+	    if (connection == null) {
+	      connect();
+	    }
 		channel.basicPublish(exchangeName, "", null, message.getBytes());
 		System.out.println(" [x] Sent '" + message + "'");
 	}
