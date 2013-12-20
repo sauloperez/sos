@@ -23,12 +23,6 @@
  */
 package org.n52.sos.binding.rest.resources.observations;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.opengis.sos.x20.InsertObservationResponseDocument;
 
 import org.apache.xmlbeans.XmlException;
@@ -36,20 +30,8 @@ import org.apache.xmlbeans.XmlObject;
 import org.n52.sos.binding.rest.requests.RequestHandler;
 import org.n52.sos.binding.rest.requests.RestRequest;
 import org.n52.sos.binding.rest.requests.RestResponse;
-import org.n52.sos.binding.rest.resources.features.FeatureByIdRequest;
-import org.n52.sos.binding.rest.resources.features.FeatureByIdResponse;
-import org.n52.sos.binding.rest.resources.features.FeaturesDecoder;
-import org.n52.sos.binding.rest.resources.features.FeaturesRequestHandler;
-import org.n52.sos.ogc.om.OmObservation;
 import org.n52.sos.ogc.ows.OwsExceptionReport;
-import org.n52.sos.request.GetFeatureOfInterestRequest;
 import org.n52.sos.request.InsertObservationRequest;
-import org.n52.sos.response.GetFeatureOfInterestResponse;
-
-import com.google.gson.Gson;
-import com.redch.AMQPService;
-import com.redch.AMQPServiceImpl;
-import com.redch.Sample;
 
 /**
  * @author <a href="mailto:e.h.juerrens@52north.org">Eike Hinderk J&uuml;rrens</a>
