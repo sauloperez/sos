@@ -120,14 +120,15 @@ public abstract class AbstractResponseEncoder<T extends AbstractServiceResponse>
         }
         XmlObject xml = create(response);
         setSchemaLocations(xml);
-        if (validate) {
-            boolean valid = XmlHelper.validateDocument(xml);
-            if (valid) {
-                LOGGER.debug("Encoded object {} is valid: {}", xml.schemaType().toString(), valid);
-            } else {
-                LOGGER.warn("Encoded object {} is valid: {}", xml.schemaType().toString(), valid);
-            }
-        }
+        // FIXME temporal!
+//        if (validate) {
+//            boolean valid = XmlHelper.validateDocument(xml);
+//            if (valid) {
+//                LOGGER.debug("Encoded object {} is valid: {}", xml.schemaType().toString(), valid);
+//            } else {
+//                LOGGER.warn("Encoded object {} is valid: {}", xml.schemaType().toString(), valid);
+//            }
+//        }
         return xml;
     }
 
