@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.xmlbeans.XmlException;
 import org.n52.sos.binding.rest.requests.RestRequest;
 import org.n52.sos.binding.rest.requests.RestResponse;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.redch.AMQPService;
 import com.redch.AMQPServiceImpl;
+import com.redch.Action;
 import com.redch.Sample;
 import com.redch.exception.AMQPServiceException;
 
@@ -119,6 +121,11 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 		sample.setValue(observation.getValue().getValue().getValue());
 		sample.setSensorId(observation.getObservationConstellation().getProcedure().getIdentifier());
 		sample.setResultTime(observation.getResultTime().getValue().toString());
+		
+		sample.setAction(Action.DELETE);
+		if ((Double) sample.getValue() > 0) {
+			sample.setAction(Action.ADD);
+		}
 		
 		// Send a FeatureByIdRequest to get the Feature of Interest position (gml:pos xml node)
 		String foiId = observation.getObservationConstellation().getFeatureOfInterest().getIdentifier().getValue();
