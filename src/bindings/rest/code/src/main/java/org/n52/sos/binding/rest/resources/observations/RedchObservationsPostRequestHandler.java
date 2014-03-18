@@ -115,6 +115,32 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 		}
 	}
 	
+	private String getCoordFromFoI(OmObservation observation) throws Exception {
+		// Send a FeatureByIdRequest to get the Feature of Interest position (gml:pos xml node)
+		String foiId = observation.getObservationConstellation().getFeatureOfInterest().getIdentifier().getValue();
+		
+		List<String> featureIDs = new ArrayList<String>(1);
+	    featureIDs.add(foiId);
+	    
+		GetFeatureOfInterestRequest foiReq = new GetFeatureOfInterestRequest();
+		foiReq.setFeatureIdentifiers(featureIDs);
+		foiReq.setService("SOS");
+		foiReq.setVersion("2.0.0");
+		
+		// Retrieve the Feature of Interest geometry and get its coordinate
+		try {
+			FeaturesRequestHandler handler = new FeaturesRequestHandler();
+			FeatureByIdRequest featureByIdReq = new FeatureByIdRequest(foiReq, null);
+			FeatureByIdResponse resp = (FeatureByIdResponse) handler.handleRequest((RestRequest) featureByIdReq);
+			
+			return RedchObservationsHelpers.getGmlPoint(resp.getAbstractFeature().xmlText());
+			
+		} catch (Exception e) {
+			LOGGER.debug("Coordinates retrieval from Feature of Interest geometry failed");
+			throw e;
+		}
+	}
+	
 	private Sample buildSample(OmObservation observation) throws Exception {
 		Sample sample = new Sample();
 		sample.setId(observation.getIdentifier().getValue());
@@ -127,30 +153,9 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 			sample.setAction(Action.ADD);
 		}
 		
-		// Send a FeatureByIdRequest to get the Feature of Interest position (gml:pos xml node)
-		String foiId = observation.getObservationConstellation().getFeatureOfInterest().getIdentifier().getValue();
+		String coord = getCoordFromFoI(observation);
+		sample.setCoord(RedchObservationsHelpers.coordToArray(coord));
 		
-		List<String> featureIDs = new ArrayList<String>(1);
-        featureIDs.add(foiId);
-        
-		GetFeatureOfInterestRequest foiReq = new GetFeatureOfInterestRequest();
-		foiReq.setFeatureIdentifiers(featureIDs);
-		foiReq.setService("SOS");
-		foiReq.setVersion("2.0.0");
-		
-		// Retrieve the Feature of Interest geometry and store its coordinate
-		try {
-			FeatureByIdRequest featureByIdReq = new FeatureByIdRequest(foiReq, null);
-			FeaturesRequestHandler handler = new FeaturesRequestHandler();
-			FeatureByIdResponse resp = (FeatureByIdResponse) handler.handleRequest((RestRequest) featureByIdReq);
-			
-			String coord = RedchObservationsHelpers.getGmlPoint(resp.getAbstractFeature().xmlText());
-			sample.setCoord(RedchObservationsHelpers.coordToArray(coord));
-			
-		} catch (Exception e) {
-			LOGGER.debug("Coordinates retrieval from Feature of Interest geometry failed");
-			throw e;
-		}
 		return sample;
 	}
 
