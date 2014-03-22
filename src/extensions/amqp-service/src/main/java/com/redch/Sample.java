@@ -51,8 +51,8 @@ public class Sample {
 		this.resultTime = resultTime;
 	}
 
-	public String getAction() {
-		return action.getValue();
+	public Action getAction() {
+		return action;
 	}
 
 	public void setAction(Action action) {

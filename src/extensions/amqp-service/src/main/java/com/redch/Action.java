@@ -1,15 +1,15 @@
 package com.redch;
 
 public enum Action {
-	ADD("add"), DELETE("delete");
+	ADD(0), DELETE(1);
 	
-	private String value;
+	private int value;
 	
-	Action(String s) {
-		value = s;
+	Action(int n) {
+		value = n;
 	}
 
-	public String getValue() {
+	public int getValue() {
 		return value;
 	}
 }

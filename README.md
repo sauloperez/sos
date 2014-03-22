@@ -16,7 +16,7 @@ You must create a Postgres PostGIS database named `sos`. To do so, connect to po
     =# CREATE EXTENSION postgis;
 
     # Quit from the DB
-    =# \q;
+    =# \q
 
 ### AMQP Service extension
 

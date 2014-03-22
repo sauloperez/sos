@@ -25,6 +25,7 @@ package org.n52.sos.binding.rest.resources.observations;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -89,14 +90,12 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 
 	private void publish(InsertObservationRequest ioReq) {
 		try {
-			LOGGER.debug("Start handling of queue publication. Sensor Id: {}", 
-					ioReq.getAssignedSensorId());
-			
+			// Build sample from an O&M observation
 			OmObservation observation = ioReq.getObservations().get(0);
 			Sample sample = buildSample(observation);
 			
-			LOGGER.debug("Sample built from Observation. Observation Id: {}",
-					observation.getIdentifier().getValue());
+			LOGGER.debug("Sample Built. Sensor Id: {}, Observation Id: {}",
+						 sample.getSensorId(), sample.getId());
 			
 			// Json encoding
 			Gson gson = new Gson();
@@ -111,6 +110,7 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 			
 			LOGGER.debug("Message published to queue. Host: {}, Exchange: {}", host, exchange);
 		} catch (Exception e) {
+			LOGGER.debug("The observation could not be published to the queue. " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -142,14 +142,27 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 	}
 	
 	private Sample buildSample(OmObservation observation) throws Exception {
+		String obsId = observation.getIdentifier().getValue();
+		String sensorId = observation.getObservationConstellation().getProcedure().getIdentifier();
+		
+		if (obsId == "" || obsId == null) {
+			throw new Exception("Sample observation Id can't be empty");
+		}
+		
+		if (sensorId == "" || sensorId == null) {
+			throw new Exception("Sample sensor Id can't be empty");
+		}
+		
 		Sample sample = new Sample();
-		sample.setId(observation.getIdentifier().getValue());
+		sample.setId(obsId);
 		sample.setValue(observation.getValue().getValue().getValue());
-		sample.setSensorId(observation.getObservationConstellation().getProcedure().getIdentifier());
+		sample.setSensorId(sensorId);
 		sample.setResultTime(observation.getResultTime().getValue().toString());
 		
+		
 		sample.setAction(Action.DELETE);
-		if ((Double) sample.getValue() > 0) {
+		BigDecimal value = (BigDecimal) sample.getValue();
+		if (value.compareTo(BigDecimal.ZERO) > 0) {
 			sample.setAction(Action.ADD);
 		}
 		
