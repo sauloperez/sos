@@ -143,30 +143,38 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 	
 	private Sample buildSample(OmObservation observation) throws Exception {
 		String obsId = observation.getIdentifier().getValue();
+		Object value = observation.getValue().getValue().getValue();
 		String sensorId = observation.getObservationConstellation().getProcedure().getIdentifier();
-		
+		String coord = getCoordFromFoI(observation);
+
 		if (obsId == "" || obsId == null) {
 			throw new Exception("Sample observation Id can't be empty");
+		}
+		
+		if (value == null) {
+			throw new Exception("Sample value can't be empty");
 		}
 		
 		if (sensorId == "" || sensorId == null) {
 			throw new Exception("Sample sensor Id can't be empty");
 		}
 		
+		if (coord == "" || coord == null) {
+			throw new Exception("Sample coordinates can't be empty");
+		}
+		
 		Sample sample = new Sample();
 		sample.setId(obsId);
-		sample.setValue(observation.getValue().getValue().getValue());
+		sample.setValue(value);
 		sample.setSensorId(sensorId);
 		sample.setResultTime(observation.getResultTime().getValue().toString());
 		
-		
 		sample.setAction(Action.DELETE);
-		BigDecimal value = (BigDecimal) sample.getValue();
-		if (value.compareTo(BigDecimal.ZERO) > 0) {
+		BigDecimal val = (BigDecimal) sample.getValue();
+		if (val.compareTo(BigDecimal.ZERO) > 0) {
 			sample.setAction(Action.ADD);
 		}
 		
-		String coord = getCoordFromFoI(observation);
 		sample.setCoord(RedchObservationsHelpers.coordToArray(coord));
 		
 		return sample;
