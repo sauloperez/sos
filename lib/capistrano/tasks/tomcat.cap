@@ -9,11 +9,16 @@ namespace :deploy do
     on roles(:sos), in: :sequence, wait: 5 do
       execute "export JAVA_HOME=#{fetch(:java_home)} && cd #{fetch(:deploy_to)}/current/src && /usr/bin/mvn clean install -Dmaven.test.skip=true"
       execute "ln -s #{fetch(:deploy_to)}/current #{fetch(:app_container)}/#{fetch(:application)}"
-      execute "curl --user #{fetch(:tomcat_manager)}:#{fetch(:tomcat_manager_password)} http://$CAPISTRANO:HOST$:8080/manager/text/undeploy?path=/#{fetch(:application)}"
-      execute "curl --upload-file #{fetch(:app_container)}/current/target/#{fetch(:application)}*.war --user #{fetch(:tomcat_manager)}:#{fetch(:tomcat_manager_password)} http://$CAPISTRANO:HOST$:8080/manager/text/deploy?path=/#{fetch(:application)}"
+    end
+  end
+
+  task :upload do
+    on roles(:sos), in: :sequence, wait: 5 do
+      execute "cd #{fetch(:deploy_to)}/current/src && /usr/bin/mvn tomcat:deploy-only"
     end
   end
 
   after :publishing, :tomcat
-  after :tomcat, :cleanup
+  after :tomcat, :upload
+  after :upload, :cleanup
 end
