@@ -10,7 +10,8 @@ set :ssh_options, {
 
 ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
-set :deploy_to, '/var/sos/'
+# Default deploy_to directory is /var/www/my_app
+set :deploy_to, '/var/www/sos'
 
 set :use_sudo, false
 
@@ -31,6 +32,9 @@ set :copy_strategy, :export
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
+
+# Required when not using rvm or rbenv
+SSHKit.config.command_map[:rake]  = "bundle exec rake"
 
 namespace :deploy do
 
