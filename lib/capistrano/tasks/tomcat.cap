@@ -1,0 +1,19 @@
+set :java_home, '/usr/lib/jvm/default-java'
+set :app_container, '/var/lib/tomcat7/webapps'
+set :tomcat_manager, 'admin'
+set :tomcat_manager_password, 'admin'
+
+namespace :deploy do
+
+  task :tomcat do
+    on roles(:sos), in: :sequence, wait: 5 do
+      run "cd #{fetch(:deploy_to)}/current && /usr/bin/mvn clean install"
+      run "ln -s #{fetch(:deploy_to)}/current #{fetch(:app_container)}/#{fetch(:application)}"
+      run "curl --user #{fetch(:tomcat_manager)}:#{fetch(:tomcat_manager_password)} http://$CAPISTRANO:HOST$:8080/manager/text/undeploy?path=/#{fetch(:application)}"
+      run "curl --upload-file #{fetch(:app_container)}/current/target/#{fetch(:application)}*.war --user #{fetch(:tomcat_manager)}:#{fetch(:tomcat_manager_password)} http://$CAPISTRANO:HOST$:8080/manager/text/deploy?path=/#{fetch(:application)}"
+    end
+  end
+
+  after :publishing, :tomcat
+  after :tomcat, :cleanup
+end
