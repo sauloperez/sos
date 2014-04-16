@@ -1,7 +1,5 @@
 set :java_home, '/usr/lib/jvm/java-1.7.0-openjdk-amd64'
 set :app_container, '/var/lib/tomcat7/webapps'
-set :tomcat_manager, 'admin'
-set :tomcat_manager_password, 'admin'
 
 namespace :deploy do
 
