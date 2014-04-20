@@ -1,3 +1,5 @@
+set :stage, :production
+
 set :user, 'ubunt'
 set :group, 'ubuntu'
 

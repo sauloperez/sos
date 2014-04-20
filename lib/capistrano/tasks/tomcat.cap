@@ -1,23 +1,24 @@
-set :java_home, '/usr/lib/jvm/java-1.7.0-openjdk-amd64'
-set :app_container, '/var/lib/tomcat7/webapps'
+set :user, 'admin'
+set :password, 'admin'
+set :path, '/webapp'
 
 namespace :deploy do
 
   task :tomcat do
     on roles(:sos), in: :sequence, wait: 5 do
-      execute "export JAVA_HOME=#{fetch(:java_home)} && cd #{fetch(:deploy_to)}/current/src && /usr/bin/mvn clean install -Dmaven.test.skip=true"
+      execute "/usr/bin/mvn clean install -Dmaven.test.skip=true"
     end
   end
 
   task :unload do
     on roles(:sos), in: :sequence, wait: 5 do
-      execute "cd #{fetch(:deploy_to)}/current/src && /usr/bin/mvn tomcat:undeploy -Dmaven.test.skip=true"
+      execute "curl --user #{fetch(:user)}:#{fetch(:admin)} http://localhost:8080/manager/text/undeploy?path=#{fetch(:path)}"
     end
   end
 
   task :upload do
     on roles(:sos), in: :sequence, wait: 5 do
-      execute "cd #{fetch(:deploy_to)}/current/src && /usr/bin/mvn tomcat:deploy -Dmaven.test.skip=true"
+      execute "curl --upload-file #{fetch(:deploy_to)}/current/src/webapp/target/52n-sos-webapp.war --user #{fetch(:user)}:#{fetch(:admin)} http://localhost:8080/manager/text/deploy?path=#{fetch(:path)}"
     end
   end
 
