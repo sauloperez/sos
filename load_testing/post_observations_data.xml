@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<sosREST:Observation xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:om="http://www.opengis.net/om/2.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:sf="http://www.opengis.net/sampling/2.0" xmlns:sosREST="http://www.opengis.net/sosREST/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="SOS" version="2.0.0">
+  <om:OM_Observation>
+    <om:phenomenonTime>
+      <gml:TimePeriod>
+        <gml:beginPosition>2014-06-09T20:07:12+02:00</gml:beginPosition>
+        <gml:endPosition>2014-06-09T20:07:14+02:00</gml:endPosition>
+      </gml:TimePeriod>
+    </om:phenomenonTime>
+    <om:resultTime>
+      <gml:TimeInstant>
+        <gml:timePosition>2014-06-09T20:07:14+02:00</gml:timePosition>
+      </gml:TimeInstant>
+    </om:resultTime>
+    <om:procedure xlink:href="00:00:00:00:00:04"/>
+    <om:observedProperty xlink:href="http://sweet.jpl.nasa.gov/2.3/phenEnergy.owl#Photovoltaics"/>
+    <om:featureOfInterest>
+      <sams:SF_SpatialSamplingFeature gml:id="ssf_feature_1">
+        <gml:identifier codeSpace="">http://www.redch.org/featureOfInterest/00:00:00:00:00:04</gml:identifier>
+        <sf:type xlink:href="http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint"/>
+        <sf:sampledFeature xlink:href="http://www.redch.org/featureOfInterest/00:00:00:00:00:04"/>
+        <sams:shape>
+          <gml:Point gml:id="feature_1">
+            <gml:pos srsName="http://www.opengis.net/def/crs/EPSG/0/4326">42.166739827397954 2.019212845413076</gml:pos>
+          </gml:Point>
+        </sams:shape>
+      </sams:SF_SpatialSamplingFeature>
+    </om:featureOfInterest>
+    <om:result uom="urn:ogc:def:uom:OGC:m" xsi:type="gml:MeasureType">11.882</om:result>
+  </om:OM_Observation>
+  <sosREST:link href="http://www.redch.org/offering/00:00:00:00:00:04/observations" rel="http://www.opengis.net/sosREST/1.0/offering-get" type="application/gml+xml"/>
+</sosREST:Observation>

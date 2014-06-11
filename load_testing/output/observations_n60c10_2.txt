@@ -1,0 +1,46 @@
+This is ApacheBench, Version 2.3 <$Revision: 1554214 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 54.72.170.113 (be patient).....done
+
+
+Server Software:        Apache-Coyote/1.1
+Server Hostname:        54.72.170.113
+Server Port:            8080
+
+Document Path:          /webapp/sos/rest/observations
+Document Length:        1000 bytes
+
+Concurrency Level:      10
+Time taken for tests:   18.163 seconds
+Complete requests:      60
+Failed requests:        0
+Non-2xx responses:      60
+Total transferred:      70920 bytes
+Total body sent:        132240
+HTML transferred:       60000 bytes
+Requests per second:    3.30 [#/sec] (mean)
+Time per request:       3027.202 [ms] (mean)
+Time per request:       302.720 [ms] (mean, across all concurrent requests)
+Transfer rate:          3.81 [Kbytes/sec] received
+                        7.11 kb/s sent
+                        10.92 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:      141 1188 1088.9    456    5104
+Processing:   307 1512 1496.2    586    8071
+Waiting:      306 1511 1496.0    583    8070
+Total:        479 2700 1955.8   2133    9554
+
+Percentage of the requests served within a certain time (ms)
+  50%   2133
+  66%   3146
+  75%   3981
+  80%   4234
+  90%   5137
+  95%   6905
+  98%   7958
+  99%   9554
+ 100%   9554 (longest request)
