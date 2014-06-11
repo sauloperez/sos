@@ -1,2 +1,0 @@
-starttime	seconds	ctime	dtime	ttime	wait
-Tue Jun 10 07:34:26 2014	1402378466	48	463	511	462
