@@ -1,5 +1,0 @@
-# URL of the RabbitMQ server
-redch.amqp.host=192.168.0.20
-
-# Name of the exchange to where the observations should be published
-redch.amqp.exchange=observations
