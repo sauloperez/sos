@@ -56,7 +56,21 @@ In production the deployment process is automatized using [Capistrano](http://ca
 
 This essentially runs commands on the remote server through SSH. Once the process is finished, point your browser to `<production_server>/webapp` and fill up the wizard fields like in development.
 
-In addition, it also provides tasks to # TODO fix tomcat tasks
+In addition, it also provides tasks to manage Tomcat. You can list all available tasks typing:
+
+	$ cap production -T
+	...
+	cap tomcat:compile                 # Compile tomcat
+	cap tomcat:deploy                  # Deploy tomcat
+	cap tomcat:restart                 # Restart tomcat
+	cap tomcat:start                   # Start tomcat
+	cap tomcat:stop                    # Stop tomcat
+	cap tomcat:undeploy                # Undeploy tomcat
+	
+So, you can run any of these by tying, for instance:
+
+	cap production tomcat: restart
+
 
 ## Testing
 
