@@ -62,7 +62,6 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 	private static final String PROPERTIES_FILE = "redch.properties";
     private static final String HOST = "redch.amqp.host";
     private static final String EXCHANGE = "redch.amqp.exchange";
-    private static final String USER_HOME = "user.home";
     
     private Map<?, ?> properties = new Properties();
 
@@ -74,15 +73,14 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
     	
     	try {
     		// Read all properties for further use
-    		// Note that the properties file must be stored within user's home directory
-    		String dir = System.getProperty(USER_HOME);
+    		// Note that the properties file directory must be passed to JAVA_OPTS as -DPROP_FILE_PATH=/path
+    		String dir = System.getProperty("PROP_FILE_PATH");
     		File propsFile = new File(dir, PROPERTIES_FILE);
 			properties = RedchObservationsHelpers.propertiesToMap(propsFile);
 			
 			publish(ioReq);
 		} catch (IOException e) {
-			LOGGER.debug("AMQP properties retrieval failed");
-			e.printStackTrace();
+			LOGGER.error("AMQP properties retrieval failed", e);
 		}
     	
     	return response;
