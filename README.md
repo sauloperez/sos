@@ -56,7 +56,7 @@ In production the deployment process is automatized using [Capistrano](http://ca
 
 This essentially runs commands on the remote server through SSH. Once the process is finished, point your browser to `<production_server>/webapp` and fill up the wizard fields like in development.
 
-
+In addition, it also provides tasks to # TODO fix tomcat tasks
 
 ## Testing
 
