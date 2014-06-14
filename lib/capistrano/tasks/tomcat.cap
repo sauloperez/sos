@@ -2,27 +2,47 @@ set :user, 'admin'
 set :password, 'admin'
 set :path, '/webapp'
 
-namespace :deploy do
+namespace :tomcat do
 
-  task :tomcat do
+  desc "Compile tomcat"
+  task :compile do
     on roles(:sos), in: :sequence, wait: 5 do
-      execute "/usr/bin/mvn clean install -Dmaven.test.skip=true"
+      execute "cd #{fetch(:deploy_to)}/current/src; /usr/bin/mvn clean install -Dmaven.test.skip=true"
     end
   end
 
-  task :unload do
-    on roles(:sos), in: :sequence, wait: 5 do
-      execute "curl --user #{fetch(:user)}:#{fetch(:admin)} http://localhost:8080/manager/text/undeploy?path=#{fetch(:path)}"
-    end
-  end
-
-  task :upload do
+  desc "Deploy tomcat"
+  task :deploy do
     on roles(:sos), in: :sequence, wait: 5 do
       execute "curl --upload-file #{fetch(:deploy_to)}/current/src/webapp/target/52n-sos-webapp.war --user #{fetch(:user)}:#{fetch(:admin)} http://localhost:8080/manager/text/deploy?path=#{fetch(:path)}"
     end
   end
 
-  after :publishing, :tomcat
-  after :tomcat, :upload
-  after :upload, :cleanup
+  desc "Undeploy tomcat"
+  task :undeploy do
+    on roles(:sos), in: :sequence, wait: 5 do
+      execute "curl --user #{fetch(:user)}:#{fetch(:admin)} http://localhost:8080/manager/text/undeploy?path=#{fetch(:path)}"
+    end
+  end
+
+  desc "Restart tomcat"
+  task :restart do
+    on roles(:sos), in: :sequence, wait: 5 do
+      sudo '/etc/init.d/tomcat7 restart'
+    end
+  end
+
+  desc "Start tomcat"
+  task :start do
+    on roles(:sos), in: :sequence, wait: 5 do
+      sudo '/etc/init.d/tomcat7 start'
+    end
+  end
+
+  desc "Stop tomcat"
+  task :stop do
+    on roles(:sos), in: :sequence, wait: 5 do
+      sudo '/etc/init.d/tomcat7 stop'
+    end
+  end
 end
