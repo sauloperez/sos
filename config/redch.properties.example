@@ -1,0 +1,5 @@
+# URL of the RabbitMQ server
+redch.amqp.host=127.0.0.1
+
+# Name of the RabbitMQ exchange to where the observations should be published
+redch.amqp.exchange=samples

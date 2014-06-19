@@ -7,6 +7,7 @@ public class Sample {
 	private float[] coord;
 	private Object value;
 	private String resultTime;
+	private Action action;
 
 	public Sample() {}
 	
@@ -48,6 +49,14 @@ public class Sample {
 
 	public void setResultTime(String resultTime) {
 		this.resultTime = resultTime;
+	}
+
+	public Action getAction() {
+		return action;
+	}
+
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 	@Override

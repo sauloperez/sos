@@ -25,10 +25,12 @@ package org.n52.sos.binding.rest.resources.observations;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.apache.xmlbeans.XmlException;
 import org.n52.sos.binding.rest.requests.RestRequest;
 import org.n52.sos.binding.rest.requests.RestResponse;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.redch.AMQPService;
 import com.redch.AMQPServiceImpl;
+import com.redch.Action;
 import com.redch.Sample;
 import com.redch.exception.AMQPServiceException;
 
@@ -59,7 +62,6 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 	private static final String PROPERTIES_FILE = "redch.properties";
     private static final String HOST = "redch.amqp.host";
     private static final String EXCHANGE = "redch.amqp.exchange";
-    private static final String USER_HOME = "user.home";
     
     private Map<?, ?> properties = new Properties();
 
@@ -71,15 +73,14 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
     	
     	try {
     		// Read all properties for further use
-    		// Note that the properties file must be stored within user's home directory
-    		String dir = System.getProperty(USER_HOME);
+    		// Note that the properties file directory must be passed to JAVA_OPTS as -DPROP_FILE_PATH=/path
+    		String dir = System.getProperty("PROP_FILE_PATH");
     		File propsFile = new File(dir, PROPERTIES_FILE);
 			properties = RedchObservationsHelpers.propertiesToMap(propsFile);
 			
 			publish(ioReq);
 		} catch (IOException e) {
-			LOGGER.debug("AMQP properties retrieval failed");
-			e.printStackTrace();
+			LOGGER.error("AMQP properties retrieval failed", e);
 		}
     	
     	return response;
@@ -87,14 +88,12 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 
 	private void publish(InsertObservationRequest ioReq) {
 		try {
-			LOGGER.debug("Start handling of queue publication. Sensor Id: {}", 
-					ioReq.getAssignedSensorId());
-			
+			// Build sample from an O&M observation
 			OmObservation observation = ioReq.getObservations().get(0);
 			Sample sample = buildSample(observation);
 			
-			LOGGER.debug("Sample built from Observation. Observation Id: {}",
-					observation.getIdentifier().getValue());
+			LOGGER.debug("Sample Built. Sensor Id: {}, Observation Id: {}",
+						 sample.getSensorId(), sample.getId());
 			
 			// Json encoding
 			Gson gson = new Gson();
@@ -109,41 +108,73 @@ public class RedchObservationsPostRequestHandler extends ObservationsPostRequest
 			
 			LOGGER.debug("Message published to queue. Host: {}, Exchange: {}", host, exchange);
 		} catch (Exception e) {
+			LOGGER.debug("The observation could not be published to the queue. " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
-	private Sample buildSample(OmObservation observation) throws Exception {
-		Sample sample = new Sample();
-		sample.setId(observation.getIdentifier().getValue());
-		sample.setValue(observation.getValue().getValue().getValue());
-		sample.setSensorId(observation.getObservationConstellation().getProcedure().getIdentifier());
-		sample.setResultTime(observation.getResultTime().getValue().toString());
-		
+	private String getCoordFromFoI(OmObservation observation) throws Exception {
 		// Send a FeatureByIdRequest to get the Feature of Interest position (gml:pos xml node)
 		String foiId = observation.getObservationConstellation().getFeatureOfInterest().getIdentifier().getValue();
 		
 		List<String> featureIDs = new ArrayList<String>(1);
-        featureIDs.add(foiId);
-        
+	    featureIDs.add(foiId);
+	    
 		GetFeatureOfInterestRequest foiReq = new GetFeatureOfInterestRequest();
 		foiReq.setFeatureIdentifiers(featureIDs);
 		foiReq.setService("SOS");
 		foiReq.setVersion("2.0.0");
 		
-		// Retrieve the Feature of Interest geometry and store its coordinate
+		// Retrieve the Feature of Interest geometry and get its coordinate
 		try {
-			FeatureByIdRequest featureByIdReq = new FeatureByIdRequest(foiReq, null);
 			FeaturesRequestHandler handler = new FeaturesRequestHandler();
+			FeatureByIdRequest featureByIdReq = new FeatureByIdRequest(foiReq, null);
 			FeatureByIdResponse resp = (FeatureByIdResponse) handler.handleRequest((RestRequest) featureByIdReq);
 			
-			String coord = RedchObservationsHelpers.getGmlPoint(resp.getAbstractFeature().xmlText());
-			sample.setCoord(RedchObservationsHelpers.coordToArray(coord));
+			return RedchObservationsHelpers.getGmlPoint(resp.getAbstractFeature().xmlText());
 			
 		} catch (Exception e) {
 			LOGGER.debug("Coordinates retrieval from Feature of Interest geometry failed");
 			throw e;
 		}
+	}
+	
+	private Sample buildSample(OmObservation observation) throws Exception {
+		String obsId = observation.getIdentifier().getValue();
+		Object value = observation.getValue().getValue().getValue();
+		String sensorId = observation.getObservationConstellation().getProcedure().getIdentifier();
+		String coord = getCoordFromFoI(observation);
+
+		if (obsId == "" || obsId == null) {
+			throw new Exception("Sample observation Id can't be empty");
+		}
+		
+		if (value == null) {
+			throw new Exception("Sample value can't be empty");
+		}
+		
+		if (sensorId == "" || sensorId == null) {
+			throw new Exception("Sample sensor Id can't be empty");
+		}
+		
+		if (coord == "" || coord == null) {
+			throw new Exception("Sample coordinates can't be empty");
+		}
+		
+		Sample sample = new Sample();
+		sample.setId(obsId);
+		sample.setValue(value);
+		sample.setSensorId(sensorId);
+		sample.setResultTime(observation.getResultTime().getValue().toString());
+		
+		sample.setAction(Action.DELETE);
+		BigDecimal val = (BigDecimal) sample.getValue();
+		if (val.compareTo(BigDecimal.ZERO) > 0) {
+			sample.setAction(Action.ADD);
+		}
+		
+		sample.setCoord(RedchObservationsHelpers.coordToArray(coord));
+		
 		return sample;
 	}
 

@@ -77,3 +77,4 @@ So, you can run any of these by tying, for instance:
 The AMQPService extensions as well as the SOS itself come with unit tests made with JUnit. It is recommended to run them from your IDE of choice. Most of them have JUnit plugins available.
 
 The tests can be found in the `src/test` folder of every module.
+
