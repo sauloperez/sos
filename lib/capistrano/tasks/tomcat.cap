@@ -7,7 +7,7 @@ namespace :tomcat do
   desc "Compile tomcat"
   task :compile do
     on roles(:sos), in: :sequence, wait: 5 do
-      execute "cd #{fetch(:deploy_to)}/current/src; /usr/bin/mvn clean install -Dmaven.test.skip=true"
+      execute "cd #{fetch(:deploy_to)}/current/src; /usr/bin/mvn clean install -Dmaven.test.skip=true -DPROP_FILE_PATH=/var/www/sos/current/config/"
     end
   end
 
